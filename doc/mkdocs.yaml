@@ -1,0 +1,75 @@
+
+site_name: The Mjolnir Programming Language
+site_url: https://mjolnir-lang.org/docs/
+
+site_description: 
+site_author: 'Wesley Freeman Dahar'
+
+copyright: CLOSED
+
+
+repo_name: GitHub
+repo_url: https://github.com/wesleydahar/mjolnir-lang/
+
+docs_dir: docs
+site_dir: site
+
+nav:
+    - Home: 'index.md'
+    - pages/annotations.md
+    - pages/architecture.md
+    - pages/ast.md
+    - pages/bitfields.md
+    - pages/classes.md
+    - pages/collections.md
+    - pages/comments.md
+    - pages/comparison.md
+    - pages/coroutines.md
+    - pages/cv-qualifiers.md
+    - pages/data.md
+    - pages/embedded-data.md
+    - pages/enumerations.md
+    - pages/extras.md
+    - pages/functions.md
+    - pages/heap-members.md
+    - pages/interfaces.md
+    - pages/lambdas.md
+    - pages/lex.md
+    - pages/lifetime.md
+    - pages/memory.md
+    - pages/methods.md
+    - pages/mjolnir.md
+    - pages/modules.md
+    - pages/namespace.md
+    - pages/objects.md
+    - pages/operators.md
+    - pages/platform.md
+    - pages/program.md
+    - pages/properties.md
+    - pages/semantic-version.md
+    - pages/statements.md
+    - pages/structures.md
+    - pages/style.md
+    - pages/syntax.md
+    - pages/templates.md
+    - pages/threads.md
+    - pages/types.md
+    - pages/unions.md
+    - pages/values.md
+    - pages/variables.md
+    - pages/volatile.md
+    - pages/design-patterns/visitor.md
+    - pages/examples/volatile.md
+    - pages/philosophy/interfaces/encoding-decoding.md
+    - pages/philosophy/interfaces/formatting.md
+    - pages/philosophy/interfaces/intermediate-representations.md
+    - pages/philosophy/interfaces/reading-writing.md
+    - pages/philosophy/structure/interface.md
+
+logo: 'images/icon.svg'
+
+theme:
+    name: readthedocs
+    locale: en
+    extra:
+        version: 0.1.0
