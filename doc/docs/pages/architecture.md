@@ -3,7 +3,7 @@
 All Mjolnir programs must have an architecture file which defines the
 environment and system architecture.
 
-Environmetns may be embedded system/bare metal, linux/windows application. etc.
+Environments may be embedded system/bare metal, linux/windows application. etc.
 
 The architecture defined memory regions and cache config.
 

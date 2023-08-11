@@ -9,11 +9,11 @@ Structures are groups of related data. They maintain order and alignment require
 There is no padding before the first element. There is padding between elements
 only when required to preserve the alignment of the following member.
 There is padding after the last member only when required to preserve the
-alignemnt of the first member as in an array.
+alignment of the first member as in an array.
 
 Structure do not have abstractions or implementations. They do not have constructors
 or destructors. They may have members and methods. All of their members must be
-primitives or structs.
+primitives or structures.
 
 ## Named Structures
 
@@ -28,7 +28,7 @@ struct Packet {
 }
 ```
 
-## Anonymouse Structures
+## Anonymous Structures
 
 Anonymous structures, along with anonymous unions, serve to define overlapping
 regions of memory within a type and do not name a new type. Anonymous
@@ -71,7 +71,7 @@ x.lsb = x.msb;
 // struct
 
 
-// structs are accessed by member name. Always allow for that syntax
+// structures are accessed by member name. Always allow for that syntax
 // constructors provide named hints
 
 
@@ -86,7 +86,7 @@ struct Rectangle {
 
 
         // Overload the function operator on the type?
-        Rectange Rectangle(
+        Rectangle Rectangle(
             u32 width = 0;
             u32 height = 0;
         ) {

@@ -36,7 +36,7 @@ Programs may be one of the following categories:
     - Heap allocated call stack (or maybe single call stack if recursion is manageable)
 5. No
     - Single call stack
-6. Change all recursive funcitons into iterative functions
+6. Change all recursive functions into iterative functions
     - Single call stack
 7. Allocate the call stack for each recursive function after using worst case call stack nesting
     - This may significantly over allocate for the general case

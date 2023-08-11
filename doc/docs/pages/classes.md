@@ -2,52 +2,11 @@
 
 Classes are user defined types.
 
-## Class Type Definition
+Classes are encapsulated data.
 
-The type definition of a Class uses the `class` keyword with the following syntax:
+All members are private.
 
-```mj
-class Rectangle {
-    u32 width;
-    u32 height;
-
-    u32 width() {
-        return width;
-    }
-
-    u32 height() {
-        return height;
-    }
-
-    u32 area() {
-        return width * height;
-    }
-
-    void set_width(u32 width) {
-        this.width = width;
-    }
-
-    void set_height(u32 height) {
-        this.height = height;
-    }
-
-    void resize(u32 width, u32 height) {
-        this.width = width;
-        this.height = height;
-    }
-}
-```
-
-## Generic Class Type Definition
-
-```mj
-class Rectangle<T> {
-    T members;
-
-    void methods(T &arg) {
-    }
-}
-```
+Shared members are can be grouped by template type or global.
 
 ## Class Type
 
@@ -63,7 +22,7 @@ Classes must be initialized before use, and destroyed before they leave scope.
 ### Const Constructors
 
 When initializing a constant object, the constructor inherits the const-ness of the assigned
-storage location. If the variables being initiaslized has CV qualifiers, then the constuctor
+storage location. If the variables being initialized has CV qualifiers, then the constructor
 must inherit them.
 
 This is the only instance where the parameter list is mutated to support potentially
@@ -95,7 +54,7 @@ class String {
 }
 ```
 
-The code below demonstates the problem.
+The code below demonstrates the problem.
 
 ```mj
 String letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -105,7 +64,7 @@ const StringView const_hex_digits = const_letters[0:6];
 ```
 
 Here, the view over `letters` may return either a const or a mutable `StringView`.
-The `StringView` constuctor may accept the pointer to the string data.
+The `StringView` constructor may accept the pointer to the string data.
 
 However, the view over `const_letters` may only return a const `StringView`.
 The `StringView` constructor cannot accept the pointer to the constant string data, as is.
@@ -114,7 +73,7 @@ There are three approaches which would address the problem
 
 1. Create a const constructor explicitly
     - This breaks the CV qualifier inheritance pattern
-2. Allow const inheritance in constuctors
+2. Allow const inheritance in constructors
     - This
 3. Overload the slice function with a `const StringView` return type
     - This breaks the CV qualifier inheritance pattern
@@ -123,7 +82,7 @@ There are three approaches which would address the problem
 
 Members are initialized by order of dependency.
 
-Constant members are mutable until after the contructor has returned.
+Constant members are mutable until after the constructor has returned.
 
 ```mj
 class Rectangle {
@@ -148,7 +107,7 @@ class Rectangle {
         this.height = other.height;
     }
 
-    // Move contructor
+    // Move constructor
     Rectangle(Rectangle other) {
         this = other;
     }

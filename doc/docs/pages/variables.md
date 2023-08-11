@@ -74,3 +74,34 @@ u32 b = a; // 'b' is declared and initialized, 'a' is not uninitialized
 File f = File("some/path.txt"); // 'f' is declared and initialized
 File g = f; // 'g' is declared and initialized, 'f' is uninitialized
 ```
+
+## Reassignment
+
+Reassignment is the same as assignment, except the destination object is destroyed before being
+assigned to.
+
+When reassigning an object with itself it nothing happens
+
+When reassigning an object with itself as part of an expression to be assigned, RVO
+operates by passing a reference to the source and destination, allowing either a move or
+copy to be specified within the function.
+
+Reassignment as the output of a function happens within the function by means of RVO,
+so the destination object is not destroyed in the caller's scope.
+
+This means the initialization/assignment state of the operation must be passed
+to the function by annotating the return value type in some way.
+
+## Uninitialization
+
+Uninitialiation is the early destruction of an object. Usually objects are destroyed
+automatically when they go out of scope.
+
+## Reinitialization
+
+## Copying and Moving
+
+See objects for an explanation of copying and moving.
+
+Variables themselves are named accessors to typed storage (objects). Objects
+can be moved and copied.

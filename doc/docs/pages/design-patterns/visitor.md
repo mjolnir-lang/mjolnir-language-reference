@@ -1,7 +1,7 @@
 # Visitor
 
 The Visitor pattern has nothing to do with visitors or visiting, and is poorly named.
-Instead it described a method of double dispatch.
+Instead it describes a method of double dispatch.
 
 ## Example
 

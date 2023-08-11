@@ -6,13 +6,13 @@
 
 Types are `UpperCamelCase` They are not read as often as variables
 and must be distinguished from values. Since types are not named as
-specifically as variables, the use of CammelCase is not as limiting.
+specifically as variables, the use of CamelCase is not as limiting.
 
 ### Keywords
 
-Keywords are always one word, lowercase. This is common in mose languages.
+Keywords are always one word, lowercase. This is common in most languages.
 They share style with variables and functions, but they may be used as
-keywords with propper semantic formatting.
+keywords with proper semantic formatting.
 
 ### Variables and Functions
 
@@ -30,7 +30,7 @@ as resources.
 In this list are local and global variables and enums.
 
 Some variables have a case for being `UPPER_SNAKE_CASE`, such as register fields
-and named bitfieds.
+and named bitfields.
 
 These identifiers as a subset of variables, so they must be easy to read as well,
 and the correlation between upper and lower case is convenient and expressive.

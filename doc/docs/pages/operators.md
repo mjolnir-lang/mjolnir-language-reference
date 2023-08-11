@@ -14,44 +14,197 @@ Operators may be grouped semantically:
 - equality
 - and some combinations
 
-It is recommented, though not required, that the semantics of an overloaded operator not be changed.
+It is recommended, though not required, that the semantics of an overloaded operator not be changed.
 
 The syntax of operators cannot be changed. Binary and unary operators must have the same syntax
 everywhere.
 
 Operators are symbolic representations of various operations.
 
-## Assignment Operators
+## Initialization
+
+Initialization and destruction are the first an last operations performed on every object that is not globally scoped.
+
+Unlike C++, object initialization may be deferred until later in the scope by initializing the value
+
+### Default Initialization
+
+Default initialization is shorthand for calling the default constructor for the
+type at the time of declaration.
+
+```mj
+Type var
+```
+
+### Initialization by Assignment
+
+```mj
+Vector<u32> vec = Vector<u32>()
+
+// These are equivalent
+Vector<u32> vec = Vector<u32>([12, 34, 56])
+
+// For single argument constructors, the constructor may be omitted and the value will be passed automatically.
+// This is not done for assignment. Assignment which has been overloaded for a 
+Vector<u32> vec = [12, 34, 56]
+
+// Type casts may be perform implicitly when an assignment operator is not defined.
+// If assignment is not defined for a type, but a constructor for that type is found,
+// the constructor will be called and the value will be move assigned.
+Vector<u32> vec = [12, 34, 56]
+```
+
+### Deferred Initialization
+
+```mj
+Type var = uninitialized
+```
+
+### Destruction
+
+The destructor for a type is called when the variable goes out of scope.
+
+When a reference goes out of scope it is not destroyed.
+
+```mj
+var.~Type()
+```
+
+### Explicit Initialization
+
+Explicit initialization performs initialization on a variable which has already been defined.
+It requires that the variable has been uninitialized by either declaring it as uninitialized
+or by calling the destructor explicitly.
+
+Uninitialized variables may not be passed used until they are assigned.
+
+The only benefit of deferred initialization is for dynamic allocation of raw memory within collections
+and iterative initialization of arrays.
+
+It does not call the destructor is not called.
+
+It is similar to C++ placement new.
+
+```mj
+Type var = uninitialized
+var.Type()
+
+Type var    // default initialization
+var.~Type() // explicit destructor call
+var.Type()  // explicit initialization
+```
+
+### Structure Initialization
+
+Bitfields, structures, unions, and variants do not have constructors, but, with
+the exception of bitfields, they do have destructors.
+
+Structure initialization has two forms: structural and inlined.
+
+When a structure is initialized, all of its members are initialized at the same time.
+
+```mj
+Point<u32> point = {0, 7}
+
+void Bitmap::set_position(Point<u32> position)
+
+bitmap.set_position({0, 3}) // Initialization and assignment allow the type of structure to be inferred.
+bitmap.set_position(Point<u32> {0, 3}) // Also valid, but unnecessary
+
+// However a type cast is not sufficient to infer the structure type, because casting is
+// an operator that belongs to the type, and `{2, 4}` does not have a type by itself.
+// Point is not able to define a constructor or assignment operator overload that can accept
+// the untyped brace initializer.
+u32 x = (Point<u32>: {2, 4}).x // invalid
+```
+
+```mj
+Point<u32> point = {0, 7}
+u32 x = Point<u32> {0, 7}.x
+```
+
+### Inline Initialization
+
+Inline initialization can be considered a constructor call. This means that constant structure initialization
+can be performed as with class constructors.
+
+```mj
+Point<u32> point = {
+    .x = 0
+    .y = 7
+}
+```
+
+```mj
+Point<u32> point = {
+    .x = 0
+    .y = 3 * .x + 7
+}
+```
+
+## Structure Assignment
+
+When structures and other POD types are assigned after being initialized, their destructor must be called.
+
+Structures do not have assignment operator overloading, so the assignment operators for each member are called.
+
+Using structural assignment allows only specified members to be assigned while preserving the values of
+other members. Note that this is different from initialization in that unspecified members are default initialized when the
+structure if being assigned.
+
+## Assignment Operator
+
+The assignment operator is similar to the initialization operator
 
 | Symbol | Name | Description |
 | ------ | ---- | ----------- |
-| `=`    | Assignemnt                               | |
-| `+=`   | Arithmetic addition and assignemnt       | |
-| `-=`   | Arithmetic subtraction and assignemnt    | |
-| `*=`   | Arithmetic multiplication and assignemnt | |
-| `/=`   | Arithmetic division and assignemnt       | |
-| `%=`   | Arithmetic remainder and assignemnt      | |
-| `&=`   | Bitwise AND and assignemnt               | |
-| `\|=`  | Bitwise OR and assignemnt                | |
-| `^=`   | Bitwise XOR and assignemnt               | |
-| `<<=`  | Logical Shift Left and assignemnt        | |
-| `>>=`  | Arithmetic Shift Right and assignemnt    | |
-| `>>>=` | Logical Shift Right and assignemnt       | |
-| `&=`   | Bitwise AND and assignemnt               | |
-| `\|=`  | Bitwise OR and assignemnt                | |
-| `^=`   | Bitwise XOR and assignemnt               | |
+| `=`    | Assignment                | |
 
-## Arithmentic Operators
+## Compound Assignment Operators
+
+Compound assignment operators modify a variable by performing an operation on it directly.
+
+Semantically, they out to be equivalent to assigning the result of an operation to the first operand, though with the
+benefit of not having to create an intermediate result. This semantic relationship should be preserved when overloading these
+operators for user defined types.
+
+These operators should only be defined for numeric types.
+
+The use of `+=` for collections and strings, should be replaced with `.append()`.
 
 | Symbol | Name | Description |
 | ------ | ---- | ----------- |
-| `+`    | Arithmetic addition       | |
+| `+=`   | Arithmetic addition and assignment       | |
+| `-=`   | Arithmetic subtraction and assignment    | |
+| `*=`   | Arithmetic multiplication and assignment | |
+| `/=`   | Arithmetic division and assignment       | |
+| `%=`   | Arithmetic remainder and assignment      | |
+| `&=`   | Bitwise AND and assignment               | |
+| `\|=`  | Bitwise OR and assignment                | |
+| `^=`   | Bitwise XOR and assignment               | |
+| `<<=`  | Shift Left and assignment                | |
+| `>>=`  | Shift Right and assignment               | |
+| `&&=`  | Logical AND and assignment               | |
+| `\|\|=`| Logical OR and assignment                | |
+| `^^=`  | Logical XOR and assignment               | |
+
+## Arithmetic Operators
+
+The use of `+` for collections and strings, should be replaced with `.join()`.
+
+| Symbol | Name | Description |
+| ------ | ---- | ----------- |
+| `+`    | Arithmetic addition      | |
 | `-`    | Arithmetic subtraction    | |
 | `*`    | Arithmetic multiplication | |
 | `/`    | Arithmetic division       | |
 | `%`    | Arithmetic remainder      | |
 
 ## Logical Operators
+
+Logical operators return boolean values based on the truthiness of the arguments.
+
+Arguments to these operators must be `bool`, so all arguments must provide an implicit a cast to `bool`.
 
 | Symbol | Name | Description |
 | ------ | ---- | ----------- |
@@ -60,8 +213,15 @@ Operators are symbolic representations of various operations.
 | `\|\|` | Logical OR  | |
 | `^^`   | Logical XOR | |
 
-**Note:** Short circuit behavior applies to logical operators `&&` and `||`,
-such that as soon as the expression is evaluated.
+**Note:** Short circuit behavior applies to the logical binary operators `&&` and `||`, but not to `^^`,
+such that subsequent expressions need not be evaluated if the expression is shown to have a value.
+
+```mj
+if (!string.is_empty() && string[0] == 'A') {
+    // If the first expression is false, the second will not be tested, since its result will not affect
+    // the value of the result.
+}
+```
 
 ## Bitwise Operators
 
@@ -85,6 +245,7 @@ such that as soon as the expression is evaluated.
 | `<`    | Less than                | |
 | `>=`   | Greater than or equal to | |
 | `<=`   | Less than or equal to    | |
+| `<=>`  | Compare with    | |
 
 ```mj
 // Function call
@@ -99,7 +260,6 @@ such that as soon as the expression is evaluated.
 
 // Member access
 // .
-// ->
 
 // Scope
 // ::
@@ -124,52 +284,52 @@ Operator overloading is a means of defining functions for the standard operators
 
 All operator overloading is done at global scope and should call methods when necessary.
 
-If that cannot be done, method implmentations may be used when private state is needed.
+If that cannot be done, method implementations may be used when private state is needed.
 
 Copy python and auto-inherit operators?
 
 Overloaded operators should follow the principle of least surprise, where the semantic
 meaning of the operator is preserved.
 
-| Operator | Python | Mjolnir |
-| -------- | ------ | ------- |
-| `>`   | `__gt__`       | `is_greater()` |
-| `<`   | `__lt__`       | `is_less()` |
-| `==`  | `__eq__`       | `is_equal()` |
-| `>=`  | `__ge__`       | `is_geq()` |
-| `<=`  | `__le__`       | `is_leq()` |
-| `!=`  | `__ne__`       | `is_not_equal()` |
-| `>>`  | `__rshift__`   | `shift_right()` |
-| `<<`  | `__lshift__`   | `shift_left()` |
-| `&`   | `__and__`      | `and()` |
-| `^`   | `__xor__`      | `xor()` |
-| `\|`  | `__or__`       | `or()` |
-| `~`   | `__invert__`   | `invert()` |
-| `+`   | `__pos__`      | `posative()` |
-| `–`   | `__neg__`      | `negate()` |
-| `++`  |                | `increment()` |
-| `--`  |                | `decrement()` |
-| `++`  |                | `post_increment()` |
-| `--`  |                | `post_decrement()` |
-| `+`   | `__add__`      | `add()` |
-| `–`   | `__sub__`      | `subtract()` |
-| `*`   | `__mul__`      | `multiply()` |
-| `/`   | `__div__`      | `divide()` |
-| `%`   | `__mod__`      | `remainder()` |
-| `+=`  | `__iadd__`     | `add_inplace()` |
-| `-=`  | `__isub__`     | `subtract_inplace()` |
-| `*=`  | `__imul__`     | `multiply_inplace()` |
-| `/=`  | `__idiv__`     | `divide_inplace()` |
-| `%=`  | `__imod__`     | `remainder_inplace()` |
-| `>>=` | `__irshift__`  | `shift_right_inplace()` |
-| `<<=` | `__ilshift__`  | `shift_left_inplace()` |
-| `&=`  | `__iand__`     | `and()_inplace` |
-| `^=`  | `__ixor__`     | `xor_inplace()` |
-| `\|=` | `__ior__`      | `or_inplace()` |
-| `in`  | `__contains__` | `in()` |
-| `to`  | `(up cast)`    | `to<T>()` |
-| `as`  | `(down cast)`  | `as<T>()` |
-| `[]`  | `__index__`    | `subscript()` |
+| Operator | Mjolnir |
+| -------- | ------- |
+| `>`      | `is_greater()` |
+| `<`      | `is_less()` |
+| `==`     | `is_equal()` |
+| `>=`     | `is_geq()` |
+| `<=`     | `is_leq()` |
+| `!=`     | `!is_equal()` |
+| `>>`     | `shift_right()` |
+| `<<`     | `shift_left()` |
+| `&`      | `and()` |
+| `^`      | `xor()` |
+| `\|`     | `or()` |
+| `~`      | `invert()` |
+| `+`      | `posative()` |
+| `–`      | `negate()` |
+| `++`     | `increment()` |
+| `--`     | `decrement()` |
+| `++`     | `post_increment()` |
+| `--`     | `post_decrement()` |
+| `+`      | `add()` |
+| `–`      | `subtract()` |
+| `*`      | `multiply()` |
+| `/`      | `divide()` |
+| `%`      | `remainder()` |
+| `+=`     | `add_inplace()` |
+| `-=`     | `subtract_inplace()` |
+| `*=`     | `multiply_inplace()` |
+| `/=`     | `divide_inplace()` |
+| `%=`     | `remainder_inplace()` |
+| `>>=`    | `shift_right_inplace()` |
+| `<<=`    | `shift_left_inplace()` |
+| `&=`     | `and()_inplace` |
+| `^=`     | `xor_inplace()` |
+| `\|=`    | `or_inplace()` |
+| `in`     | `in()` |
+| `to`     | `to<T>()` |
+| `as`     | `as<T>()` |
+| `[]`     | `subscript()` |
 
 In C++, operators are overloaded in the form of functions with special names.
 As with other functions, overloaded operators can generally be implemented
@@ -184,84 +344,129 @@ These operators cannot be overloaded:
 
 `.`, `::`, `sizeof`, `typeof`, `.*`, and `?:`
 
-Relational operators
+## Relational operators
 
 ```mj
-bool {>}(const U &a, const V &b);
-bool {<}(const U &a, const V &b);
-bool {>=}(const U &a, const V &b);
-bool {<=}(const U &a, const V &b);
-bool {==}(const U &a, const V &b);
-bool {!=}(const U &a, const V &b);
+bool {>}(const U &a, const V &b)
+bool {<}(const U &a, const V &b)
+bool {>=}(const U &a, const V &b)
+bool {<=}(const U &a, const V &b)
+bool {==}(const U &a, const V &b)
+bool {!=}(const U &a, const V &b)
 
-bool {!_}(U &a);
+bool {!}(U &a)
 ```
 
-Bitwise operators
+## Bitwise operators
 
 ```mj
-T {&}(const U &a, const V &b);
-T {^}(const U &a, const V &b);
-T {|}(const U &a, const V &b);
-T {>>}(const U &a, const V &b);
-T {<<}(const U &a, const V &b);
+T {&}(const U &a, const V &b)
+T {^}(const U &a, const V &b)
+T {|}(const U &a, const V &b)
+T {>>}(const U &a, const V &b)
+T {<<}(const U &a, const V &b)
 
-T {&=}(const U &a, const V &b);
-T {^=}(const U &a, const V &b);
-T {|=}(const U &a, const V &b);
-T {>>=}(const U &a, const V &b);
-T {<<=}(const U &a, const V &b);
+T {&=}(const U &a, const V &b)
+T {^=}(const U &a, const V &b)
+T {|=}(const U &a, const V &b)
+T {>>=}(const U &a, const V &b)
+T {<<=}(const U &a, const V &b)
 
-T {~@}(U &a);
+T {~}(U &a)
 ```
 
-Arithmetic Operators
+## Assignment Operators
 
 ```mj
-T {+}(const U &a, const V &b);
-T {-}(const U &a, const V &b);
-T {*}(const U &a, const V &b);
-T {/}(const U &a, const V &b);
-T {%}(const U &a, const V &b);
-
-T {+=}(const U &a, const V &b);
-T {-=}(const U &a, const V &b);
-T {*=}(const U &a, const V &b);
-T {/=}(const U &a, const V &b);
-T {%=}(const U &a, const V &b);
-
-T {+@}(const U &a);
-T {-@}(const U &a);
-
-T {++@}(U &a);
-T {--@}(U &a);
-
-T {@++}(T &a);
-T {@--}(T &a);
+T {=}(const U &a, const V &b)
+T Class::{=}(const V &b)
 ```
 
-Miscellaneous
+## Compound Assignment Operators
 
 ```mj
-T {=}(U &a);
-T {@[]}(U &a);
-T {->}(U &a);
-T {->*}(U &a);
-T {@()}(U &a);
-T {*@}(U &a);
-T {&@}(U &a);
+T {+=}(const U &a, const V &b)
+T {-=}(const U &a, const V &b)
+T {*=}(const U &a, const V &b)
+T {/=}(const U &a, const V &b)
+T {%=}(const U &a, const V &b)
+
+T {++}(U &a)
+T {--}(U &a)
+
+T {++}(T &a)
+T {--}(T &a)
 ```
 
-Cast Operators
+## Arithmetic Operators
 
 ```mj
-T {()@}(U &a);
+T {+}(const U &a, const V &b)
+T {-}(const U &a, const V &b)
+T {*}(const U &a, const V &b)
+T {/}(const U &a, const V &b)
+T {%}(const U &a, const V &b)
+
+T {+=}(const U &a, const V &b)
+T {-=}(const U &a, const V &b)
+T {*=}(const U &a, const V &b)
+T {/=}(const U &a, const V &b)
+T {%=}(const U &a, const V &b)
+
+T {+}(const U &a)
+T {-}(const U &a)
+
+T {++}(U &a)
+T {--}(U &a)
+
+T {++}(T &a)
+T {--}(T &a)
+```
+
+## Miscellaneous Operators
+
+```mj
+T {=}(U &a)
+T {[]}(U &a)
+T {->}(U &a)
+T {->*}(U &a)
+T {()}(U &a)
+T {*}(U &a)
+T {&}(U &a)
+```
+
+## Type Cast Operators
+
+```mj
+T {()}(U &a)
 
 // member cast
-T to<T>();
-T as<T>();
+T to<T>()
+T as<T>()
 ```
 
 ```mj
-bool in();
+bool in()
+```
+
+## Operator Precedence and Associativity
+
+Operator precedence determines the order in which operators are applied to expressions.
+
+In math, the order of operations is our guide when evaluating expressions with multiple operators.
+
+Left or right associativity can also be understood as binding power.
+
+Operators that are left associative are evaluated from left to right.
+
+```mj
+u32 x = 9 * 8 / 2 * 3
+u32 x = ((9 * 8) / 2) * 3
+```
+
+Operators that are right associative are evaluated from right to left.
+
+```mj
+u32 x = 9 * 8 / 2 * 3
+u32 x = ((9 * 8) / 2) * 3
 ```
