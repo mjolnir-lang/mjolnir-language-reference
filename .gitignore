@@ -1,5 +1,12 @@
 .vscode/
 
+# NPM
+/node_modules/
+
+# VitePress
+/docs/.vitepress/dist
+/docs/.vitepress/cache
+
 cache/
 build/
 misc/
