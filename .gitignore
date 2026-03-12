@@ -4,22 +4,5 @@
 /node_modules/
 
 # VitePress
-/docs/.vitepress/dist
-/docs/.vitepress/cache
-
-cache/
-build/
-misc/
-
-# MkDocs
-doc/site
-
-# LaTeX
-doc/pdf/*.aux
-doc/pdf/*.fdb_latexmk
-doc/pdf/*.fls
-doc/pdf/*.log
-doc/pdf/*.out
-doc/pdf/*.pdf
-doc/pdf/*.synctex.gz
-doc/pdf/*.toc
+/.vitepress/dist
+/.vitepress/cache
