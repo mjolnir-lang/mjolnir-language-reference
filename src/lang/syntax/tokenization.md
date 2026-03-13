@@ -30,8 +30,7 @@ being absent.
 
 ### Built-in Type Names
 
-Built-in type names are pure keywords. They may not be used as identifiers in any
-position.
+Built-in type names are pure keywords. They may not be used as identifiers in any position.
 
 - `void`
 - `bool`
@@ -43,8 +42,7 @@ position.
 
 ### Pure Keywords
 
-These identifiers are always keywords and may not be used as identifiers in any
-position.
+These identifiers are always keywords and may not be used as identifiers in any position.
 
 | Token    | Variable | Function | Generic |
 | -------- | -------- | -------- | ------- |
@@ -58,31 +56,31 @@ These keywords may be used as function or generic names but not as variable name
 | Token           | Variable | Function | Generic |
 | --------------- | -------- | -------- | ------- |
 | `and`           | -        | safe     | safe    |
+| `as`            | -        | safe     | safe    |
 | `break`         | -        | safe     | safe    |
-| `case`          | -        | safe     | safe    |
 | `catch`         | -        | safe     | safe    |
 | `continue`      | -        | safe     | safe    |
+| `do`            | -        | safe     | safe    |
 | `else`          | -        | safe     | safe    |
 | `fail`          | -        | safe     | safe    |
 | `false`         | -        | safe     | safe    |
+| `for`           | -        | safe     | safe    |
+| `if`            | -        | safe     | safe    |
+| `in`            | -        | safe     | safe    |
+| `is`            | -        | safe     | safe    |
 | `not`           | -        | safe     | safe    |
+| `null`          | -        | safe     | safe    |
 | `or`            | -        | safe     | safe    |
 | `return`        | -        | safe     | safe    |
 | `then`          | -        | safe     | safe    |
 | `true`          | -        | safe     | safe    |
+| `try`           | -        | safe     | safe    |
 | `uninitialized` | -        | safe     | safe    |
+| `until`         | -        | safe     | safe    |
+| `use`           | -        | safe     | safe    |
+| `when`          | -        | safe     | safe    |
+| `while`         | -        | safe     | safe    |
 | `yield`         | -        | safe     | safe    |
-| `null`          | -        | safe     | safe    |
-
-The keywords `and`, `or`, `then`, `else`, `case`, and `catch` are inline structural
-operators. They cannot be variable names because they are recognized as keywords when
-followed by an expression boundary — the point at which the next token cannot
-continue the current expression or begins a new one.
-
-Variable declarations require the ability to be followed by `{` to satisfy inline
-initialization syntax: `TypeName var_name { ... }`. The keywords `do`, `struct`,
-`try`, and `union` would otherwise be valid variable names but are excluded by this
-rule.
 
 ### Non-function, Non-generic Keywords
 
@@ -121,9 +119,6 @@ by an expression boundary.
 
 | Token       | Variable | Function | Generic | Keyword suffix                     |
 | ----------- | -------- | -------- | ------- | ---------------------------------- |
-| `as`        | safe     | safe     | safe    | type name/qualifier                |
-| `is`        | safe     | safe     | safe    | type name/qualifier                |
-| `for`       | safe     | safe     | safe    | type name/qualifier, variable name |
 | `class`     | safe     | safe     | safe    | type name                          |
 | `interface` | safe     | safe     | safe    | type name                          |
 | `const`     | safe     | safe     | safe    | type name                          |
@@ -131,86 +126,6 @@ by an expression boundary.
 | `type`      | safe     | safe     | safe    | type name                          |
 | `unit`      | safe     | safe     | safe    | unit name                          |
 | `import`    | safe     | safe     | safe    | module name                        |
-| `do`        | safe     | safe     | safe    | `{`                                |
-| `if`        | safe     | safe     | safe    | expression boundary                |
-| `match`     | safe     | safe     | safe    | expression boundary                |
-| `try`       | safe     | safe     | safe    | expression boundary                |
-| `until`     | safe     | safe     | safe    | expression boundary                |
-| `use`       | safe     | safe     | safe    | expression boundary                |
-| `while`     | safe     | safe     | safe    | expression boundary                |
-
-Keywords whose conditional suffix is `expression boundary` may be used as variable names with one
-restriction: they may not appear in the inline instance declaration form
-`TypeName keyword_var { ... }`. This form is syntactically ambiguous for keyword
-identifiers because the lexer cannot distinguish the variable name from the keyword
-without unbounded lookbehind through a potentially generic type name. The explicit instance
-declaration form must be used instead:
-
-```mj
-struct Match {
-    String text
-    nat offset
-}
-
-Match match
-```
-
-instead of the inline instance form:
-
-```mj
-struct Match match {
-    String text
-    nat offset
-}
-```
-
-This is the only place in the language where a non-expression boundary is not trivially
-distinguishable from an expression boundary.
-
-`match` and `type` are the primary identifiers this restriction is intended to
-preserve. Their keyword conditions are forward-looking and do not collide with `{`
-expressions in ordinary statement positions — only in the inline instance declaration
-form.
-
-#### Expression Boundaries
-
-An expression boundary is a position in the token stream where a new independent value
-is introduced. It is the point at which the next token begins a value rather than
-continuing, connecting, or operating on an existing one.
-
-A token marks an expression boundary if it is a literal, an identifier in value
-position, or an opening delimiter — optionally preceded by one or more prefix
-operators. Prefix operators do not themselves constitute the boundary; they are part of
-the expression they introduce and are transparent to boundary detection.
-
-Tokens that connect or branch between expressions — structural operators, type
-operators, and similar connectives — do not mark an expression boundary regardless of
-their position. The parser resolves any specific token to one side or the other of this
-line based on context.
-
-Expression boundaries are used by the keyword system to determine when context-sensitive
-keywords are active. A keyword that is only recognized when followed by an expression
-boundary is never active when the following token is a connective, ensuring the
-identifier remains available in positions where a new value is not being introduced.
-
-The precise syntactic detection of expression boundaries, including the handling of
-edge cases in the keyword system, is specified in the lexer document, but correct syntax
-will never violate the rule, so this shouldn't be a concern for developers.
-
-### Unconditional Safe Keywords
-
-`in` is only syntactically meaningful inside a for-loop, but it is a valid identifier
-in all positions including as the iteration variable itself.
-
-| Token | Variable | Function | Generic |
-| ----- | -------- | -------- | ------- |
-| `in`  | safe     | safe     | safe    |
-
-```mj
-for in in in {
-    print(in)
-}
-```
 
 ## Tokens and Whitespace
 
